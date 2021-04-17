@@ -13,7 +13,7 @@ def create_app():
     with app.app_context():
         import Controllers  # Import routes
         db.create_all()  # Create database tables for our data models
-        JWTManager(app)
+        JWTManager(app) # connect app to JWT
 
         return app
 
