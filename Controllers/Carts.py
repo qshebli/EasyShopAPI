@@ -7,6 +7,7 @@ from flask_jwt_extended  import jwt_required, get_jwt_identity
 from wsgi import db
 from Models.Carts import Cart
 from Models.CartItems import CartItems
+from Models.Product import Product
 from Models.User import User
 from werkzeug.exceptions import InternalServerError
 
@@ -62,8 +63,17 @@ def remove_from_cart():
 def checkout():
     request_body = request.json
     cart_id = request_body["id"]
+    status = request_body["status"]
+
     cart_to_checkout = Cart.query.filter_by(id=cart_id).first()
-    cart_to_checkout.status = request_body["status"]
+    cart_to_checkout.status = status
+
+    cart_items = CartItems.query.filter_by(cid=cart_id).all()
+    for item in cart_items:
+        product = Product.query.filter_by(pid=item.pid).first()
+        if product is not None:
+            product.quantity -= item.quantity
+
 
     db.session.commit()
 
