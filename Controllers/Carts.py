@@ -13,6 +13,7 @@ from werkzeug.exceptions import InternalServerError
 bp = Blueprint('carts', __name__)
 
 @bp.route("/", methods=["GET"])
+@jwt_required()
 def get_Carts():
     try:
         Carts = Cart.query.all()
@@ -43,7 +44,8 @@ def add_to_cart():
 
     return jsonify("item added successfuly")
 
-@bp.route("/remove_from_cart", methods=["post"])
+@bp.route("/remove_from_cart", methods=["POST"])
+@jwt_required()
 def remove_from_cart():
     request_body = request.json
     item_id = int(request_body["id"])
@@ -54,6 +56,18 @@ def remove_from_cart():
     db.session.commit()
 
     return jsonify("item removed successfuly")
+
+@bp.route("/checkout", methods=["POST"])
+@jwt_required()
+def checkout():
+    request_body = request.json
+    cart_id = request_body["id"]
+    cart_to_checkout = Cart.query.filter_by(id=cart_id).first()
+    cart_to_checkout.status = request_body["status"]
+
+    db.session.commit()
+
+    return jsonify("cart checkedout successfuly")
 
 def create_cart(user_id):
     new_cart = Cart(
