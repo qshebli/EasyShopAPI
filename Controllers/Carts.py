@@ -68,11 +68,12 @@ def checkout():
     cart_to_checkout = Cart.query.filter_by(id=cart_id).first()
     cart_to_checkout.status = status
 
-    cart_items = CartItems.query.filter_by(cid=cart_id).all()
-    for item in cart_items:
-        product = Product.query.filter_by(pid=item.pid).first()
-        if product is not None:
-            product.quantity -= item.quantity
+    if status == 1:
+        cart_items = CartItems.query.filter_by(cid=cart_id).all()
+        for item in cart_items:
+            product = Product.query.filter_by(pid=item.pid).first()
+            if product is not None:
+                product.quantity -= item.quantity
 
 
     db.session.commit()
