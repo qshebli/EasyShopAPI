@@ -1,6 +1,6 @@
 """Data models."""
 from wsgi import db
-from Utils import dump_datetime
+from Utils.date import dump_datetime
 
 class CartItems(db.Model):
     """Data model for carts."""
