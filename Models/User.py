@@ -22,10 +22,9 @@ class User(db.Model):
         if created_by:
             created_by_name = created_by.username
         return {
-            'id': self.id,
             'username': self.username,
             'role': self.role,
-            'createdBy': {'id': self.createdBy, 'username': created_by_name},
+            'createdBy': created_by_name,
             'createdAt': dump_datetime(self.createdAt)
         }
 

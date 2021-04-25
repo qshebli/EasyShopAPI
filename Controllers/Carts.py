@@ -71,7 +71,7 @@ def checkout():
     if status == 1:
         cart_items = CartItems.query.filter_by(cid=cart_id).all()
         for item in cart_items:
-            product = Product.query.filter_by(pid=item.pid).first()
+            product = Product.query.filter_by(id=item.pid).first()
             if product is not None:
                 product.quantity -= item.quantity
 
