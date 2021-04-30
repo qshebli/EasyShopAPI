@@ -22,7 +22,6 @@ def login():
     
     return jsonify({"msg": "Bad username or password"}), 401
 
-
 @bp.route("/", methods=["GET"])
 def get_users():
     try:
