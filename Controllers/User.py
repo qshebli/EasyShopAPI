@@ -34,6 +34,7 @@ def get_users():
         raise  InternalServerError()
 
 @bp.route("/create", methods=["POST"])
+@jwt_required()
 def create():
     try:
         request_body = request.json
