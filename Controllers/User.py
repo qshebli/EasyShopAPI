@@ -51,3 +51,22 @@ def create():
         return jsonify("created successfuly")
     except:
         raise InternalServerError()
+
+@bp.route("/register", methods=["POST"])
+def register():
+    try:
+        request_body = request.json
+        hashed_password = hashlib.md5(request_body["password"].encode('utf-8')).hexdigest()
+        new_user = User(
+            username= request_body["username"],
+            password= hashed_password,
+            role= '1',
+            isLocked = 0,
+            createdBy= '1',
+            createdAt= dt.now()
+            )
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify("registerd successfuly")
+    except:
+        raise InternalServerError()
