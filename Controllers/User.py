@@ -1,5 +1,6 @@
 import json
 import hashlib
+import base64
 from flask import Blueprint, current_app as app
 from datetime import datetime as dt
 from flask import jsonify, request
@@ -15,8 +16,9 @@ bp = Blueprint('users', __name__)
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
+    decrypted_password = base64.b64decode(password).decode('latin1')
     user = User.query.filter_by(username=username).first()
-    if authenticate(username, password):
+    if authenticate(username, decrypted_password):
         access_token = create_access_token(identity=user.id)
         return jsonify(access_token=access_token)
     
