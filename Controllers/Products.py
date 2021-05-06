@@ -37,7 +37,8 @@ def create():
             name= request_body["name"],
             price= request_body["price"],
             quantity= request_body["quantity"],
-            status= 0
+            status= 0,
+            description= request_body["description"]
         )
         db.session.add(new_product)
         db.session.commit()
@@ -55,9 +56,10 @@ def edit():
         product.name= request_body["name"]
         product.price= request_body["price"]
         product.quantity= request_body["quantity"]
+        product.description= request_body["description"]
 
         db.session.commit()
-        return jsonify("created successfuly")
+        return jsonify("edited successfuly")
     except:
         raise InternalServerError()
 

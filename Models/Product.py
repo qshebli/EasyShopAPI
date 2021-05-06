@@ -11,6 +11,8 @@ class Product(db.Model):
     price = db.Column(db.Numeric(18,0), index=False, unique=False, nullable=False)
     quantity = db.Column(db.Integer, index=False, unique=False, nullable=False)
     status = db.Column(db.Integer, index=False, unique=False, nullable=False)
+    description = db.Column(db.Text, index=False, unique=False, nullable=False)
+    
 
     @property
     def serialize(self):
@@ -20,7 +22,8 @@ class Product(db.Model):
             'name': self.name,
             'price': str(self.price),
             'quantity': self.quantity,
-            'status': self.status
+            'status': self.status,
+            'description':self.description
         }
 
     def __repr__(self):
