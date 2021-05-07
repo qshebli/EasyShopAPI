@@ -6,9 +6,13 @@ from datetime import datetime as dt
 from flask import jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from Models.User import User
+from Models.Carts import Cart
+from Models.CartItems import CartItems
 from wsgi import db
 from werkzeug.exceptions import InternalServerError
 from Utils.auth import authenticate
+from datetime import timedelta
+
 
 bp = Blueprint('users', __name__)
 
@@ -19,7 +23,7 @@ def login():
     decrypted_password = base64.b64decode(password).decode('latin1')
     user = User.query.filter_by(username=username).first()
     if authenticate(username, decrypted_password):
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=60))
         return jsonify(access_token=access_token)
     
     return jsonify({"msg": "Bad username or password"}), 401
@@ -32,6 +36,24 @@ def get_users():
         return jsonify(result)
     except:
         raise  InternalServerError()
+
+@bp.route("/user_details", methods=["GET"])
+@jwt_required()
+def get_user_details():
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.filter_by(id=user_id).first()
+        user_cart = Cart.query.filter_by(uid=user_id, status=0).first()
+        cart_item =  cart_items = CartItems.query.filter_by(cid=0).all()
+
+        if user_cart is not None: 
+            cart_items = CartItems.query.filter_by(cid=user_cart.id).all()
+
+        return jsonify(user_name= user.username, user_role= user.role, cart_items_count= len(cart_items))
+    except:
+        raise  InternalServerError()
+   
+
 
 @bp.route("/create", methods=["POST"])
 @jwt_required()

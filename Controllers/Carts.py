@@ -29,18 +29,25 @@ def add_to_cart():
     request_body = request.json
     user_id = get_jwt_identity()
     user_cart = Cart.query.filter_by(uid=user_id, status=0).first()
-    
+
     if user_cart is None:
         user_cart = create_cart(user_id)
-    
-    new_cart_item = CartItems(
-        cid= user_cart.id,
-        pid= request_body["pid"],
-        quantity= request_body["quantity"],
-        status= 0
-    )
 
-    db.session.add(new_cart_item)
+    product_exist = CartItems.query.filter_by(cid=user_cart.id, pid=request_body["pid"]).first()
+    
+    if product_exist is None:
+        new_cart_item = CartItems(
+            cid= user_cart.id,
+            pid= request_body["pid"],
+            quantity= request_body["quantity"],
+            status= 0
+        )
+        db.session.add(new_cart_item)   
+    else :
+        product_exist.quantity = product_exist.quantity + request_body["quantity"]     
+    
+
+    
     db.session.commit()
 
     return jsonify("item added successfuly")
