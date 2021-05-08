@@ -1,6 +1,7 @@
 """Data models."""
 from wsgi import db
 from Utils.date import dump_datetime
+from .Product import Product
 
 class CartItems(db.Model):
     """Data model for carts."""
@@ -15,10 +16,20 @@ class CartItems(db.Model):
     @property
     def serialize(self):
         """Return object data in easily serializable format"""
+        product = Product.query.filter_by(id=int(self.pid)).first()
+        product_name = ''
+        product_price = ''
+        if product:
+            product_name = product.name
+            product_price = product.price
         return {
             'id': self.id,
             'cid': self.cid,
-            'pid': self.pid,
+            'product': {
+                'id': self.pid,
+                'name': product_name,
+                'price': str(product_price)
+            },
             'quantity': self.quantity,
             'status': self.status
         }

@@ -23,6 +23,20 @@ def get_Carts():
     except:
         raise InternalServerError()
 
+@bp.route("/get_cart", methods=["GET"])
+@jwt_required()
+def get_cart():
+    try:
+        user_id = get_jwt_identity()
+        user_cart = Cart.query.filter_by(uid=user_id, status=0).first()
+        if user_cart is None:
+            return jsonify([])
+        cart_items = CartItems.query.filter_by(cid=user_cart.id).all()
+        result = [i.serialize for i in cart_items]
+        return jsonify(result)    
+    except:
+        raise InternalServerError()
+
 @bp.route("/add_to_cart", methods=["POST"])
 @jwt_required()
 def add_to_cart():
@@ -69,14 +83,14 @@ def remove_from_cart():
 @jwt_required()
 def checkout():
     request_body = request.json
-    cart_id = request_body["id"]
+    user_id = get_jwt_identity()
     status = request_body["status"]
 
-    cart_to_checkout = Cart.query.filter_by(id=cart_id).first()
+    cart_to_checkout = Cart.query.filter_by(uid=user_id, status=0).first()
     cart_to_checkout.status = status
 
     if status == 1:
-        cart_items = CartItems.query.filter_by(cid=cart_id).all()
+        cart_items = CartItems.query.filter_by(cid=cart_to_checkout.id).all()
         for item in cart_items:
             product = Product.query.filter_by(id=item.pid).first()
             if product is not None:
