@@ -17,12 +17,22 @@ class Product(db.Model):
     @property
     def serialize(self):
         """Return object data in easily serializable format"""
+        status_str = ''
+        if self.status == 0:
+            status_str = 'in progress'
+        elif self.status == 1:
+            status_str = 'approved'
+        elif self.status == 2 :
+            status_str = 'rejected' 
         return {
             'id': self.id,
             'name': self.name,
             'price': str(self.price),
             'quantity': self.quantity,
-            'status': self.status,
+            'status': {
+                'status_code': self.status, 
+                'status': status_str
+            },
             'description':self.description
         }
 

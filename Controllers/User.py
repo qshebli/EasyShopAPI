@@ -66,7 +66,7 @@ def create():
             password= hashed_password,
             role= request_body["role"],
             isLocked = 0,
-            createdBy= get_jwt_identity(),
+            createdBy= get_jwt_identity,
             createdAt= dt.now()
             )
         db.session.add(new_user)
