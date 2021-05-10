@@ -16,18 +16,6 @@ from datetime import timedelta
 
 bp = Blueprint('users', __name__)
 
-@app.route("/login", methods=["POST"])
-def login():
-    username = request.json.get("username", None)
-    password = request.json.get("password", None)
-    decrypted_password = base64.b64decode(password).decode('latin1')
-    user = User.query.filter_by(username=username).first()
-    if authenticate(username, decrypted_password):
-        access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=60))
-        return jsonify(access_token=access_token)
-    
-    return jsonify({"msg": "Bad username or password"}), 401
-
 @bp.route("/", methods=["GET"])
 def get_users():
     try:
@@ -66,7 +54,7 @@ def create():
             password= hashed_password,
             role= request_body["role"],
             isLocked = 0,
-            createdBy= get_jwt_identity,
+            createdBy= get_jwt_identity(),
             createdAt= dt.now()
             )
         db.session.add(new_user)
